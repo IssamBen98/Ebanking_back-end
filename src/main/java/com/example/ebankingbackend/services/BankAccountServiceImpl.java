@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.Date;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @Transactional
 @AllArgsConstructor
 @Slf4j // Framework de systeme de journalisation : lombok
+@CrossOrigin("*")
 
 public class BankAccountServiceImpl implements BankAccountService {
 
@@ -216,7 +218,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         BankAccount account = bankAccountRepository.findById(id).orElse(null);
         if (account == null) throw new BankAccountNotFoundException("Account Not Found !");
 
-        Page<AccountOperation> accountOperations = accountOperationRepository.findByBankAccountId(id, PageRequest.of(page, size));
+        Page<AccountOperation> accountOperations = accountOperationRepository.findByBankAccountIdOrderByDateOperationDesc(id, PageRequest.of(page, size));
         AccountHistoryDTO accountHistoryDTO = new AccountHistoryDTO();
         List<AccountOperationDTO> operationDTOS = accountOperations.getContent().stream().map(o ->
                 dtoMapper.fromAccounOperation(o)).collect(Collectors.toList());
